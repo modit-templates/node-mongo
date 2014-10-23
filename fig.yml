@@ -1,0 +1,14 @@
+web:
+  build: .
+  environment:
+    PORT: "3000"
+  ports:
+    - "3000:3000"
+  links:
+    - db
+
+db:
+  image: mongo:2.6
+  volumes:
+    - .data/mongo:/data
+  command: --smallfiles
