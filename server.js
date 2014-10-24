@@ -2,8 +2,7 @@ var express = require('express');
 var mongoose = require('mongoose');
 
 var PORT = process.env.PORT || 3000;
-var DB_PORT = process.env.DB_PORT || 27017;
-var MONGO_URI = process.env.MONGO_URI || 'mongodb://db:' + DB_PORT + '/example';
+var MONGO_URI = process.env.MONGO_URI || 'mongodb://db:27017/example';
 
 var FIRST_NAMES = ['Engelbert', 'Harvey', 'Peggy', 'Nancy', 'Ivan'];
 var LAST_NAMES = ['Humperdinck', 'Wallbanger', 'Guggenheim', 'Narwhal', 'Drago'];
