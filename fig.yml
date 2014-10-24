@@ -11,6 +11,7 @@ web:
 
 db:
   image: mongo:2.6
+  hostname: db
   volumes:
     - .data/mongo:/data
   command: --smallfiles
