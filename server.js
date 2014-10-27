@@ -25,6 +25,7 @@ mongoose.connect(MONGO_URI, {
 
 mongoose.connection.on('error', function(err) {
   console.log('ERROR connecting to: ' + MONGO_URI + '. ' + err);
+  process.exit(1);
 });
 
 mongoose.connection.once('open', function() {
