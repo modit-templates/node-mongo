@@ -11,32 +11,38 @@ var NUM_USERS = process.env.NUM_USERS || 10;
 
 var app = express();
 
+// initialize db data and store the resulting promise
+// (mongoose queues db requests before connection is open)
+
+var dataReady = initDB(NUM_USERS).onReject(function(err) {
+  console.log('ERROR initializing data: ' + err);
+});
+
 // use ejs for template engine and configure it
 
 app.engine('html', require('ejs').__express);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'html');
 
-// our only route - gets users from db and displays them
+// this catch-all route lets us accept requests right away 
+// but wait to respond until db initializes
+
+app.use(function(req, res, next) {
+  dataReady.then(next);
+});
+
+// main route - gets users from db and displays them
 
 app.get('/', getUsers, function(req, res) {
   res.render('users');
 });
 
-// connect to mongo running in our db container
+// connect to mongo and start listening for requests
 
 connect();
+listen();
 
-// then add some data and start listening for requests
-
-mongoose.connection.once('open', function() {
-  console.log('Connected!');
-  initDB(NUM_USERS).then(listen, function(err) {
-    console.log('ERROR initializing data: ' + err);
-  })
-});
-
-// calls itself with exponential backoff if connection fails
+// retries with exponential backoff if connection fails
 
 function connect(attempt) {
   console.log('Connecting to: ' + MONGO_URI + ' ...'); 
@@ -47,11 +53,11 @@ function connect(attempt) {
       console.log('ERROR! ' + err);
       console.log('Retrying in ' + timeoutSecs + 's.');
       setTimeout(connect, timeoutSecs * 1000, attempt + 1);
+    } else {
+      console.log('Connected!');
     }
   });
 }
-
-// called after connecting to db and initializing data
 
 function listen() {
   var server = app.listen(PORT, function() {
@@ -59,7 +65,7 @@ function listen() {
   });
 }
 
-// middleware - gets users and calls next route
+// middleware - used by any routes that want all users
 // note view templates can use any properties set on res.locals
 
 function getUsers(req, res, next) {
