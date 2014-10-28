@@ -20,7 +20,7 @@ module.exports = function(count) {
   }
   
   return User.remove({}).exec().then(function() {
-    User.create(users);
+    return User.create(users);
   });
 };
 
