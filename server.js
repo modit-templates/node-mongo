@@ -9,14 +9,9 @@ var PORT      = process.env.PORT      || 3000;
 var MONGO_URI = process.env.MONGO_URI || 'mongodb://db:27017/example';
 var NUM_USERS = process.env.NUM_USERS || 10;
 
+var dataReady = new mongoose.Promise(); // resolves when db is done initializing
+
 var app = express();
-
-// initialize db data and store the resulting promise
-// (mongoose queues db requests before connection is open)
-
-var dataReady = initDB(NUM_USERS).onReject(function(err) {
-  console.log('ERROR initializing data: ' + err);
-});
 
 // use ejs for template engine and configure it
 
@@ -39,8 +34,19 @@ app.get('/', getUsers, function(req, res) {
 
 // connect to mongo and start listening for requests
 
-connect();
 listen();
+connect();
+
+// after connecting to db, init data and resolve dataReady
+
+mongoose.connection.once('open', function() {
+  console.log('Connected!');
+  initDB(NUM_USERS).then(function() {
+    dataReady.resolve();
+  }, function(err) {
+    console.log('ERROR initializing data: ' + err);
+  });
+});
 
 // retries with exponential backoff if connection fails
 
@@ -53,8 +59,6 @@ function connect(attempt) {
       console.log('ERROR! ' + err);
       console.log('Retrying in ' + timeoutSecs + 's.');
       setTimeout(connect, timeoutSecs * 1000, attempt + 1);
-    } else {
-      console.log('Connected!');
     }
   });
 }
