@@ -1,0 +1,27 @@
+<% include header.html %>  
+
+<h1> Docker Node.js MongoDB Demo on Modit </h1> 
+<br\><br\><br\> 
+<h2> All users in MongoDB database </h2>
+<ol>
+  <% users.forEach(function(user, index){ %>
+    <li><%= user.name.first %> <%= user.name.last %>
+      <ul>
+        <li>_id: <%= user._id %></li>
+        <li>name: 
+          <ul>
+            <li>first: <%= user.name.first %></li>
+            <li>last: <%= user.name.last %></li>
+          </ul>
+        </li>
+        <li>age: <%= user.age %></li>
+      </ul>
+    </li>
+  <% }) %>
+</ol> 
+<br\> 
+<i><%= users.length %> documents.</i> 
+<br\><br\><br\><br\>
+<center><i> Demo code available at <a href="https://github.com/modit-templates/node-mongo">github.com</a> </i></center>
+
+<% include footer.html %>

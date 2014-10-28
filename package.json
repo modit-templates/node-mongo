@@ -6,7 +6,8 @@
   "author": "Sam Workman <sam@mod.it>",
   "dependencies": {
     "express": "4.9.x",
-    "mongoose": "3.8.x"
+    "mongoose": "3.8.x",
+    "ejs": "1.0.x"
   },
   "scripts": {
     "start": "node server.js"
