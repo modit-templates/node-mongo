@@ -19,39 +19,45 @@ var userSchema = new mongoose.Schema({
 
 var SuperUser = mongoose.model('SuperUsers', userSchema);
 
-mongoose.connect(MONGO_URI, { 
-  server: { socketOptions: { autoReconnect: true } }
-});
 
-mongoose.connection.on('error', function(err) {
-  console.log('ERROR connecting to: ' + MONGO_URI + '. ' + err);
-  process.exit(1);
-});
-
-mongoose.connection.once('open', function() {
-  console.log('Successfully connected to: ' + MONGO_URI);
-
-  app.get('/', function (req, res) {
-
-    var rando = new SuperUser ({
-      name: { 
-        first: pickName( FIRST_NAMES ), 
-        last: pickName( LAST_NAMES )
-      },
-      age: Math.floor( Math.random() * 110 )
-    });
-
-    rando.save(function (err) {
-      if (err) { console.log('Error on save!'); }
-      createWebpage(req, res);
-    });
+function connect(attempt) {
+  attempt = attempt || 0;
+  console.log('Connecting to: ' + MONGO_URI + ' ...'); 
+  mongoose.connect(MONGO_URI, function(err, res) {
+    if (err) {
+      var timeoutSecs = Math.exp(attempt);
+      console.log('ERROR! ' + err);
+      console.log('Retrying in ' + timeoutSecs + 's.');
+      setTimeout(connect, timeoutSecs * 1000, attempt + 1);
+    } else {
+      console.log('Success!');
+      listen();
+    }
   });
+}
 
+function listen() {
   var server = app.listen(PORT, function () {
-    var port = server.address().port;
-    console.log('Example app listening on port ' + port);
+    console.log('Server listening on port ' + server.address().port);
+  });
+}
+
+app.get('/', function (req, res) {
+  var rando = new SuperUser ({
+    name: { 
+      first: pickName( FIRST_NAMES ), 
+      last: pickName( LAST_NAMES )
+    },
+    age: Math.floor( Math.random() * 110 )
+  });
+
+  rando.save(function (err) {
+    if (err) { console.log('Error on save!'); }
+    createWebpage(req, res);
   });
 });
+
+connect();
 
 function createWebpage(req, res) {
   res.writeHead(200, {'Content-Type': 'text/html'});
