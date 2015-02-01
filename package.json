@@ -2,7 +2,7 @@
   "name": "modit-templates-node-mongo",
   "private": true,
   "version": "0.0.1",
-  "description": "Example webapp - use to test Docker/Fig setup",
+  "description": "Example webapp using Node.js and MongoDB",
   "author": "Sam Workman <sam@mod.it>",
   "dependencies": {
     "express": "4.9.x",

@@ -1,4 +1,6 @@
 node-mongo
 ==========
 
-example webapp - use to test your local Docker/Fig setup
+Dockerized example webapp using Node.js and MongoDB
+
+run with `fig up`

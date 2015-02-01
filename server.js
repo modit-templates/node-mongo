@@ -5,7 +5,7 @@ var User     = require('./models/user');
 
 // environment variables can be set in fig.yml
 
-var PORT      = process.env.PORT      || 3000;
+var PORT      = process.env.PORT      || 80;
 var MONGO_URI = process.env.MONGO_URI || 'mongodb://db:27017/example';
 var NUM_USERS = process.env.NUM_USERS || 10;
 
