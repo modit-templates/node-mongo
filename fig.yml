@@ -5,10 +5,8 @@ web:
   ports:
     - "8080:80"
   links:
-    - db
+    - mongo:db
 
-db:
+mongo:
   image: mongo:2.6
-  volumes:
-    - .data/mongo:/data
   command: --smallfiles
